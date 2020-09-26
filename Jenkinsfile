@@ -1,38 +1,30 @@
-CODE_CHANGES = getGitChanges()
-
 pipeline {
     agent any
-
+    environment {
+        NEW_VERSION = '1.3.0'
+        SERVER_CREDENTIALS = credentials('server-credentials')
+    }
     stages {
         stage("build") {
-            when {
-                expression {
-                    // will only build if there are code changes on 'master'
-                    BRANCH_NAME == 'master' && CODE_CHANGES == true
-                }
-            }
             steps {
                 echo 'building the application...'
             }
         }
         stage("test") {
             steps {
-                when {
-                    expression {
-                        // this stage will only execute if the branch is 'master' or 'dev'
-                        // if not, it will skip
-                        BRANCH_NAME == 'master' || BRANCH_NAME == 'dev'
-                    }
-                }
                 echo 'testing the application...'
+                echo "building version ${NEW_VERSION}"
             }
         }
         stage("deploy") {
             steps {
                 echo 'deploying the application'
+                echo "deploying with ${SERVER_CREDENTIALS}"
+                sh "${SERVER_CREDENTIALS}"
             }
         }
     }
+
     post {
         always {
             // will be executed no matter if the build fails or succeeds
