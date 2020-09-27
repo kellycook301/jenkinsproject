@@ -1,32 +1,25 @@
 pipeline {
     agent any
-    // environment {
-    //     NEW_VERSION = '1.3.0'
-    //     SERVER_CREDENTIALS = credentials('server-credentials')
-    // }
+    tools {
+        maven 'maven_3_6_3' 
+    }
     stages {
         stage("Build Stage") {
             steps {
                 echo 'building the application...'
-                withMaven(maven : 'maven_3_6_3') {
-                    sh 'mvn clean compile'
-                }
+                sh 'mvn clean compile'
             }
         }
         stage("Test Stage") {
             steps {
                 echo 'testing the application...'
-                withMaven(maven : 'maven_3_6_3') {
                     sh 'mvn test'
-                }
             }
         }
         stage("Deploy Stage") {
             steps {
                 echo 'deploying the application'
-                withMaven(maven : 'maven_3_6_3') {
                     sh 'mvn deploy'
-                }
             }
         }
     }
