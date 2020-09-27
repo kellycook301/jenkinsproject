@@ -1,26 +1,32 @@
 pipeline {
     agent any
-    environment {
-        NEW_VERSION = '1.3.0'
-        SERVER_CREDENTIALS = credentials('server-credentials')
-    }
+    // environment {
+    //     NEW_VERSION = '1.3.0'
+    //     SERVER_CREDENTIALS = credentials('server-credentials')
+    // }
     stages {
-        stage("build") {
+        stage("Build Stage") {
             steps {
                 echo 'building the application...'
+                withMaven(maven : 'maven_3_6_3') {
+                    sh 'mvn clean compile'
+                }
             }
         }
-        stage("test") {
+        stage("Test Stage") {
             steps {
                 echo 'testing the application...'
-                echo "building version ${NEW_VERSION}"
+                withMaven(maven : 'maven_3_6_3') {
+                    sh 'mvn test'
+                }
             }
         }
-        stage("deploy") {
+        stage("Deploy Stage") {
             steps {
                 echo 'deploying the application'
-                echo "deploying with ${SERVER_CREDENTIALS}"
-                sh "${SERVER_CREDENTIALS}"
+                withMaven(maven : 'maven_3_6_3') {
+                    sh 'mvn deploy'
+                }
             }
         }
     }
